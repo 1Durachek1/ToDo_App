@@ -13,6 +13,7 @@ class TodoAdapter(
     private  val todos: MutableList<Todo>
 ) : RecyclerView.Adapter<TodoAdapter.TodoViewHolder>()
 {
+    var onItemCheckedChanged: ((id: Int, isChecked: Boolean) -> Unit)? = null
     class TodoViewHolder(itemViev: View): RecyclerView.ViewHolder(itemViev)
 
     override fun onCreateViewHolder(
@@ -28,18 +29,6 @@ class TodoAdapter(
         )
     }
 
-    fun addTodo(todo: Todo)
-    {
-        todos.add(todo)
-        notifyItemInserted(todos.size-1)
-    }
-
-    fun deleteDoneTodos(){
-        todos.removeAll{todo->
-            todo.isChecked
-        }
-        notifyDataSetChanged()
-    }
 
     private fun toggle(tvTodoTitle: TextView, isChecked: Boolean)
     {
@@ -67,15 +56,23 @@ class TodoAdapter(
             cb.isChecked = curTodo.isChecked
             toggle(tvView, curTodo.isChecked)
 
-
+            cb.setOnCheckedChangeListener(null)
             cb.setOnCheckedChangeListener { _, isChecked ->
                 toggle(tvView, isChecked)
-                curTodo.isChecked = !curTodo.isChecked
+                curTodo.isChecked = isChecked
+                //Колбэк для сохранения в БД
+                onItemCheckedChanged?.invoke(curTodo.id ?: 0, isChecked)
             }
         }
     }
 
     override fun getItemCount(): Int {
         return todos.size
+    }
+
+    fun updateTodos(newTodos: List<Todo>) {
+        todos.clear()
+        todos.addAll(newTodos)
+        notifyDataSetChanged()
     }
 }

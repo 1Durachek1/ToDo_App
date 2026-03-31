@@ -39,7 +39,7 @@ dependencies {
 
     implementation(libs.androidx.room)
     ksp(libs.androidx.room.ksp)
-
+    implementation(libs.livedata.ktx)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
